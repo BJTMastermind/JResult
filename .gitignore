@@ -2,8 +2,5 @@
 /.vscode/
 /bin/
 
-# Test directory
-/src/test/
-
 # Misc
 *.directory
