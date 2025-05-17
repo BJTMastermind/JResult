@@ -1,7 +1,9 @@
 package me.bjtmastermind.jresult;
 
-import java.util.Iterator;
 import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 public final class Ok<T, E> implements Result<T, E> {
     private final T value;
@@ -16,9 +18,8 @@ public final class Ok<T, E> implements Result<T, E> {
     }
 
     @Override
-    public boolean isOkAnd() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'isOkAnd'");
+    public boolean isOkAnd(boolean condition) {
+        return isOk() && condition ? true : false;
     }
 
     @Override
@@ -27,9 +28,8 @@ public final class Ok<T, E> implements Result<T, E> {
     }
 
     @Override
-    public boolean isErrAnd() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'isErrAnd'");
+    public boolean isErrAnd(boolean condition) {
+        return isErr() && condition ? true : false;
     }
 
     @Override
@@ -43,45 +43,39 @@ public final class Ok<T, E> implements Result<T, E> {
     }
 
     @Override
-    public <U, F> Result<U, E> map(F op) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'map'");
+    public <U, F> Result<U, E> map(Function<T, U> f) {
+        return new Ok<U, E>(f.apply(value));
     }
 
     @Override
-    public <U, F> Result<U, E> mapOr(U defaultValue, F f) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'mapOr'");
+    public <U, F> U mapOr(U defaultValue, Function<T, U> f) {
+        return f.apply(value);
     }
 
     @Override
-    public <U, D, F> U mapOrElse(D defaultValue, F f) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'mapOrElse'");
+    public <U> U mapOrElse(Function<E, U> defaultValue, Function<T, U> f) {
+        return f.apply(value);
     }
 
     @Override
-    public <F, O> Result<T, E> mapErr(O op) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'mapErr'");
+    public <O> Result<T, O> mapErr(Function<E, O> f) {
+        return new Ok<T, O>(value);
     }
 
     @Override
-    public <F> Result<T, E> inspect(F f) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'inspect'");
+    public <F> Result<T, E> inspect(Consumer<T> f) {
+        f.accept(value);
+        return this;
     }
 
     @Override
-    public <F> Result<T, E> inspectErr(F f) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'inspectErr'");
+    public <F> Result<T, E> inspectErr(Consumer<E> f) {
+        return this;
     }
 
     @Override
-    public Iterator<T> iter() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'iter'");
+    public Stream<T> iter() {
+        return Stream.of(value);
     }
 
     @Override
@@ -94,11 +88,11 @@ public final class Ok<T, E> implements Result<T, E> {
         return value;
     }
 
-    @Override
-    public T unwrapOrDefault() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'unwrapOrDefault'");
-    }
+    // @Override
+    // public T unwrapOrDefault() {
+    //     // TODO Auto-generated method stub
+    //     throw new UnsupportedOperationException("Unimplemented method 'unwrapOrDefault'");
+    // }
 
     @Override
     public E expectErr(String msg) {
@@ -119,21 +113,18 @@ public final class Ok<T, E> implements Result<T, E> {
     }
 
     @Override
-    public <U, F> Result<U, E> andThen(F op) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'andThen'");
+    public <U> Result<U, E> andThen(Function<T, Result<U, E>> f) {
+        return f.apply(value);
     }
 
     @Override
     public <F> Result<T, F> or(Result<T, F> res) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'or'");
+        return new Ok<T, F>(value);
     }
 
     @Override
-    public <F, O> Result<T, F> orElse(O op) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'orElse'");
+    public <F> Result<T, F> orElse(Function<E, F> f) {
+        return new Ok<T, F>(value);
     }
 
     @Override
@@ -142,7 +133,7 @@ public final class Ok<T, E> implements Result<T, E> {
     }
 
     @Override
-    public <F> T unwrapOrElse(F op) {
+    public T unwrapOrElse(Function<E, T> f) {
         return value;
     }
 

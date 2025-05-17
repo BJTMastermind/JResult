@@ -1,40 +1,42 @@
 package me.bjtmastermind.jresult;
 
-import java.util.Iterator;
 import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 public sealed interface Result<T, E> permits Ok, Err {
     public boolean isOk();
 
-    public boolean isOkAnd();
+    public boolean isOkAnd(boolean condition);
 
     public boolean isErr();
 
-    public boolean isErrAnd();
+    public boolean isErrAnd(boolean condition);
 
     public Optional<T> ok();
 
     public Optional<E> err();
 
-    public <U, F> Result<U, E> map(F op);
+    public <U, F> Result<U, E> map(Function<T, U> f);
 
-    public <U, F> Result<U, E> mapOr(U defaultValue, F f);
+    public <U, F> U mapOr(U defaultValue, Function<T, U> f);
 
-    public <U, D, F> U mapOrElse(D defaultValue, F f);
+    public <U> U mapOrElse(Function<E, U> defaultValue, Function<T, U> f);
 
-    public <F, O> Result<T, E> mapErr(O op);
+    public <O> Result<T, O> mapErr(Function<E, O> f);
 
-    public <F> Result<T, E> inspect(F f);
+    public <F> Result<T, E> inspect(Consumer<T> f);
 
-    public <F> Result<T, E> inspectErr(F f);
+    public <F> Result<T, E> inspectErr(Consumer<E> f);
 
-    public Iterator<T> iter();
+    public Stream<T> iter();
 
     public T expect(String msg);
 
     public T unwrap();
 
-    public T unwrapOrDefault();
+    // public T unwrapOrDefault();
 
     public E expectErr(String msg);
 
@@ -42,32 +44,30 @@ public sealed interface Result<T, E> permits Ok, Err {
 
     public <U> Result<U, E> and(Result<U, E> res);
 
-    public <U, F> Result<U, E> andThen(F op);
+    public <U> Result<U, E> andThen(Function<T, Result<U, E>> f);
 
     public <F> Result<T, F> or(Result<T, F> res);
 
-    public <F, O> Result<T, F> orElse(O op);
+    public <F> Result<T, F> orElse(Function<E, F> f);
 
     public T unwrapOr(T defaultValue);
 
-    public <F> T unwrapOrElse(F op);
+    public T unwrapOrElse(Function<E, T> f);
 
-    @SuppressWarnings("unchecked")
-    public static <T, E> Result<T, E> capture(ThrowingSupplier<T> supplier) {
+    public static <T> Result<T, Exception> capture(ThrowingSupplier<T> supplier) {
         try {
-            return new Ok<T,E>(supplier.get());
+            return new Ok<T, Exception>(supplier.get());
         } catch (Exception e) {
-            return new Err<T, E>((E) e);
+            return new Err<T, Exception>(e);
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public static <T, E> Result<T, E> capture(ThrowingRunnable<T> runnable) {
+    public static <T> Result<T, Exception> capture(ThrowingRunnable<T> runnable) {
         try {
             runnable.run();
-            return new Ok<T,E>(null);
+            return new Ok<T, Exception>(null);
         } catch (Exception e) {
-            return new Err<T, E>((E) e);
+            return new Err<T, Exception>(e);
         }
     }
 
