@@ -18,8 +18,8 @@ public final class Err<T, E> implements Result<T, E> {
     }
 
     @Override
-    public boolean isOkAnd(boolean condition) {
-        return isOk() && condition ? true : false;
+    public boolean isOkAnd(Function<T, Boolean> condition) {
+        return isOk() && condition.apply(null) ? true : false;
     }
 
     @Override
@@ -28,8 +28,8 @@ public final class Err<T, E> implements Result<T, E> {
     }
 
     @Override
-    public boolean isErrAnd(boolean condition) {
-        return isErr() && condition ? true : false;
+    public boolean isErrAnd(Function<E, Boolean> condition) {
+        return isErr() && condition.apply(error) ? true : false;
     }
 
     @Override
@@ -124,8 +124,8 @@ public final class Err<T, E> implements Result<T, E> {
     }
 
     @Override
-    public <F> Result<T, F> orElse(Function<E, F> f) {
-        return new Err<T, F>(f.apply(error));
+    public <F> Result<T, F> orElse(Function<E, Result<T, F>> f) {
+        return f.apply(error);
     }
 
     @Override
@@ -144,6 +144,25 @@ public final class Err<T, E> implements Result<T, E> {
             format = "%s: \"%s\"";
         }
         throw new RuntimeException(String.format(format, msg, error));
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+
+        Err err = (Err) obj;
+        return error.equals(err.error);
+    }
+
+    @Override
+    public int hashCode() {
+        return error.hashCode();
     }
 
     @Override

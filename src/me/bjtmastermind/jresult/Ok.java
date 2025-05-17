@@ -18,8 +18,8 @@ public final class Ok<T, E> implements Result<T, E> {
     }
 
     @Override
-    public boolean isOkAnd(boolean condition) {
-        return isOk() && condition ? true : false;
+    public boolean isOkAnd(Function<T, Boolean> condition) {
+        return isOk() && condition.apply(value) ? true : false;
     }
 
     @Override
@@ -28,8 +28,8 @@ public final class Ok<T, E> implements Result<T, E> {
     }
 
     @Override
-    public boolean isErrAnd(boolean condition) {
-        return isErr() && condition ? true : false;
+    public boolean isErrAnd(Function<E, Boolean> condition) {
+        return isErr() && condition.apply(null) ? true : false;
     }
 
     @Override
@@ -123,7 +123,7 @@ public final class Ok<T, E> implements Result<T, E> {
     }
 
     @Override
-    public <F> Result<T, F> orElse(Function<E, F> f) {
+    public <F> Result<T, F> orElse(Function<E, Result<T, F>> f) {
         return new Ok<T, F>(value);
     }
 
@@ -135,6 +135,25 @@ public final class Ok<T, E> implements Result<T, E> {
     @Override
     public T unwrapOrElse(Function<E, T> f) {
         return value;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+
+        Ok ok = (Ok) obj;
+        return value.equals(ok.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return value.hashCode();
     }
 
     @Override

@@ -8,11 +8,11 @@ import java.util.stream.Stream;
 public sealed interface Result<T, E> permits Ok, Err {
     public boolean isOk();
 
-    public boolean isOkAnd(boolean condition);
+    public boolean isOkAnd(Function<T, Boolean> condition);
 
     public boolean isErr();
 
-    public boolean isErrAnd(boolean condition);
+    public boolean isErrAnd(Function<E, Boolean> condition);
 
     public Optional<T> ok();
 
@@ -48,7 +48,7 @@ public sealed interface Result<T, E> permits Ok, Err {
 
     public <F> Result<T, F> or(Result<T, F> res);
 
-    public <F> Result<T, F> orElse(Function<E, F> f);
+    public <F> Result<T, F> orElse(Function<E, Result<T, F>> f);
 
     public T unwrapOr(T defaultValue);
 
