@@ -245,6 +245,28 @@ public class Tests {
         assertEquals(3, new Err<Integer, String>("foo").unwrapOrElse((x) -> count(x)));
     }
 
+    @Test
+    void test_captureSupplier() {
+        Result<Integer, Exception> x = Result.capture(() -> methodThatCanThrow(10));
+        assertEquals(new Ok<Integer, Exception>(10), x);
+
+        assertThrows(Exception.class, () -> {
+            Result<Integer, Exception> y = Result.capture(() -> methodThatCanThrow(0));
+            y.unwrap();
+        });
+    }
+
+    @Test
+    void test_captureRunnable() {
+        Result<Void, Exception> x = Result.capture(() -> methodThatCanThrow(false));
+        assertEquals(null, x.unwrap());
+
+        assertThrows(Exception.class, () -> {
+            Result<Void, Exception> y = Result.capture(() -> methodThatCanThrow(true));
+            y.unwrap();
+        });
+    }
+
     private Result<String, String> sqThenToString(int x) {
         Optional<String> sqOut = checkedMul(x, x).map((sq) -> sq.toString());
         if (sqOut.isPresent()) {
@@ -277,5 +299,18 @@ public class Tests {
 
     private int count(String x) {
         return x.length();
+    }
+
+    private int methodThatCanThrow(int x) throws Exception {
+        if (x == 0) {
+            throw new Exception("0 was entered!");
+        }
+        return x;
+    }
+
+    private void methodThatCanThrow(boolean x) throws Exception {
+        if (x) {
+            throw new Exception("0 was entered!");
+        }
     }
 }
