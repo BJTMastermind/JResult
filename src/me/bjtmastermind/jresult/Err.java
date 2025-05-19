@@ -43,12 +43,12 @@ public final class Err<T, E> implements Result<T, E> {
     }
 
     @Override
-    public <U, F> Result<U, E> map(Function<T, U> f) {
+    public <U> Result<U, E> map(Function<T, U> f) {
         return new Err<U, E>(error);
     }
 
     @Override
-    public <U, F> U mapOr(U defaultValue, Function<T, U> f) {
+    public <U> U mapOr(U defaultValue, Function<T, U> f) {
         return defaultValue;
     }
 
@@ -58,17 +58,17 @@ public final class Err<T, E> implements Result<T, E> {
     }
 
     @Override
-    public <O> Result<T, O> mapErr(Function<E, O> f) {
-        return new Err<T, O>(f.apply(error));
+    public <F> Result<T, F> mapErr(Function<E, F> f) {
+        return new Err<T, F>(f.apply(error));
     }
 
     @Override
-    public <F> Result<T, E> inspect(Consumer<T> f) {
+    public Result<T, E> inspect(Consumer<T> f) {
         return this;
     }
 
     @Override
-    public <F> Result<T, E> inspectErr(Consumer<E> f) {
+    public Result<T, E> inspectErr(Consumer<E> f) {
         f.accept(error);
         return this;
     }
@@ -91,12 +91,6 @@ public final class Err<T, E> implements Result<T, E> {
         }
         throw new RuntimeException("called `Result.unwrap()` on an `Err` value: " + error.getClass().getSimpleName() + " { " + error.toString().replace(error.getClass().getName()+": ", "message: \"") + "\" }");
     }
-
-    // @Override
-    // public T unwrapOrDefault() {
-    //     // TODO Auto-generated method stub
-    //     throw new UnsupportedOperationException("Unimplemented method 'unwrapOrDefault'");
-    // }
 
     @Override
     public E expectErr(String msg) {
@@ -146,6 +140,7 @@ public final class Err<T, E> implements Result<T, E> {
         throw new RuntimeException(String.format(format, msg, error));
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {

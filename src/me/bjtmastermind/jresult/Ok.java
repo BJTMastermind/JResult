@@ -43,12 +43,12 @@ public final class Ok<T, E> implements Result<T, E> {
     }
 
     @Override
-    public <U, F> Result<U, E> map(Function<T, U> f) {
+    public <U> Result<U, E> map(Function<T, U> f) {
         return new Ok<U, E>(f.apply(value));
     }
 
     @Override
-    public <U, F> U mapOr(U defaultValue, Function<T, U> f) {
+    public <U> U mapOr(U defaultValue, Function<T, U> f) {
         return f.apply(value);
     }
 
@@ -58,18 +58,18 @@ public final class Ok<T, E> implements Result<T, E> {
     }
 
     @Override
-    public <O> Result<T, O> mapErr(Function<E, O> f) {
-        return new Ok<T, O>(value);
+    public <F> Result<T, F> mapErr(Function<E, F> f) {
+        return new Ok<T, F>(value);
     }
 
     @Override
-    public <F> Result<T, E> inspect(Consumer<T> f) {
+    public Result<T, E> inspect(Consumer<T> f) {
         f.accept(value);
         return this;
     }
 
     @Override
-    public <F> Result<T, E> inspectErr(Consumer<E> f) {
+    public Result<T, E> inspectErr(Consumer<E> f) {
         return this;
     }
 
@@ -87,12 +87,6 @@ public final class Ok<T, E> implements Result<T, E> {
     public T unwrap() {
         return value;
     }
-
-    // @Override
-    // public T unwrapOrDefault() {
-    //     // TODO Auto-generated method stub
-    //     throw new UnsupportedOperationException("Unimplemented method 'unwrapOrDefault'");
-    // }
 
     @Override
     public E expectErr(String msg) {
@@ -137,6 +131,7 @@ public final class Ok<T, E> implements Result<T, E> {
         return value;
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
