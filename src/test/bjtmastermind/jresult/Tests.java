@@ -19,61 +19,61 @@ import org.junit.jupiter.api.Test;
 public class Tests {
     @Test
     void test_isOk() {
-        Result<Integer, String> x = new Ok<Integer, String>(-3);
+        Result<Integer, String> x = new Ok<>(-3);
         assertEquals(true, x.isOk());
 
-        x = new Err<Integer, String>("Some error message");
+        x = new Err<>("Some error message");
         assertEquals(false, x.isOk());
     }
 
     @Test
     void test_isOkAnd() {
-        Result<Integer, String> x = new Ok<Integer, String>(2);
+        Result<Integer, String> x = new Ok<>(2);
         assertEquals(true, x.isOkAnd((y) -> y > 1));
 
-        x = new Ok<Integer, String>(0);
+        x = new Ok<>(0);
         assertEquals(false, x.isOkAnd((y) -> y > 1));
 
-        x = new Err<Integer, String>("hey");
+        x = new Err<>("hey");
         assertEquals(false, x.isOkAnd((y) -> y > 1));
     }
 
     @Test
     void test_isErr() {
-        Result<Integer, String> x = new Ok<Integer, String>(-3);
+        Result<Integer, String> x = new Ok<>(-3);
         assertEquals(false, x.isErr());
 
-        x = new Err<Integer, String>("Some error message");
+        x = new Err<>("Some error message");
         assertEquals(true, x.isErr());
     }
 
     @Test
     void test_isErrAnd() {
-        Result<Integer, Error> x = new Err<Integer, Error>(new Error(ErrorKind.NotFound));
+        Result<Integer, Error> x = new Err<>(new Error(ErrorKind.NotFound));
         assertEquals(true, x.isErrAnd((y) -> y.kind() == ErrorKind.NotFound));
 
-        x = new Err<Integer, Error>(new Error(ErrorKind.PermissionDenied));
+        x = new Err<>(new Error(ErrorKind.PermissionDenied));
         assertEquals(false, x.isErrAnd((y) -> y.kind() == ErrorKind.NotFound));
 
-        x = new Ok<Integer, Error>(123);
+        x = new Ok<>(123);
         assertEquals(false, x.isErrAnd((y) -> y.kind() == ErrorKind.NotFound));
     }
 
     @Test
     void test_ok() {
-        Result<Integer, String> x = new Ok<Integer, String>(2);
+        Result<Integer, String> x = new Ok<>(2);
         assertEquals(Optional.of(2), x.ok());
 
-        x = new Err<Integer, String>("Nothing here");
+        x = new Err<>("Nothing here");
         assertEquals(Optional.empty(), x.ok());
     }
 
     @Test
     void test_err() {
-        Result<Integer, String> x = new Ok<Integer, String>(2);
+        Result<Integer, String> x = new Ok<>(2);
         assertEquals(Optional.empty(), x.err());
 
-        x = new Err<Integer, String>("Nothing here");
+        x = new Err<>("Nothing here");
         assertEquals(Optional.of("Nothing here"), x.err());
     }
 
@@ -91,10 +91,10 @@ public class Tests {
 
     @Test
     void test_mapOr() {
-        Result<String, String> x = new Ok<String, String>("foo");
+        Result<String, String> x = new Ok<>("foo");
         assertEquals(3, x.mapOr(42, (v) -> v.length()));
 
-        x = new Err<String, String>("bar");
+        x = new Err<>("bar");
         assertEquals(42, x.mapOr(42, (v) -> v.length()));
     }
 
@@ -102,25 +102,25 @@ public class Tests {
     void test_mapOrElse() {
         int k = 21;
 
-        Result<String, String> x = new Ok<String, String>("foo");
+        Result<String, String> x = new Ok<>("foo");
         assertEquals(3, x.mapOrElse((e) -> k * 2, (v) -> v.length()));
 
-        x = new Err<String, String>("bar");
+        x = new Err<>("bar");
         assertEquals(42, x.mapOrElse((e) -> k * 2, (v) -> v.length()));
     }
 
     @Test
     void test_mapErr() {
-        Result<Integer, Integer> x = new Ok<Integer, Integer>(2);
-        assertEquals(new Ok<Integer, Integer>(2), x.mapErr((y) -> stringify(y)));
+        Result<Integer, Integer> x = new Ok<>(2);
+        assertEquals(new Ok<>(2), x.mapErr((y) -> stringify(y)));
 
-        x = new Err<Integer, Integer>(13);
-        assertEquals(new Err<Integer, String>("error code: 13"), x.mapErr((y) -> stringify(y)));
+        x = new Err<>(13);
+        assertEquals(new Err<>("error code: 13"), x.mapErr((y) -> stringify(y)));
     }
 
     @Test
     void test_inspect() {
-        Result<Byte, String> x = new Ok<Byte, String>((byte) 4);
+        Result<Byte, String> x = new Ok<>((byte) 4);
         x.inspect((y) -> System.out.println("original: " + y))
         .map((y) -> Math.pow(y, 3.0))
         .expect("failed to parse number");
@@ -134,28 +134,28 @@ public class Tests {
 
     @Test
     void test_iter() {
-        Result<Integer, String> x = new Ok<Integer, String>(7);
+        Result<Integer, String> x = new Ok<>(7);
         assertEquals(7, x.iter().iterator().next());
 
-        x = new Err<Integer, String>("nothing");
+        x = new Err<>("nothing");
         assertEquals(0, x.iter().count());
     }
 
     @Test
     void test_expect() {
         assertThrows(RuntimeException.class, () -> {
-            Result<Integer, String> x = new Err<Integer, String>("emergency failure");
+            Result<Integer, String> x = new Err<>("emergency failure");
             x.expect("Testing expect"); // errors with `Testing expect: emergency failure`
         });
     }
 
     @Test
     void test_unwrap() {
-        Result<Integer, String> x = new Ok<Integer, String>(2);
+        Result<Integer, String> x = new Ok<>(2);
         assertEquals(2, x.unwrap());
 
         assertThrows(RuntimeException.class, () -> {
-            Result<Integer, String> y = new Err<Integer, String>("emergency failure");
+            Result<Integer, String> y = new Err<>("emergency failure");
             y.unwrap();
         });
     }
@@ -163,7 +163,7 @@ public class Tests {
     @Test
     void test_expectErr() {
         assertThrows(RuntimeException.class, () -> {
-            Result<Integer, String> x = new Ok<Integer, String>(10);
+            Result<Integer, String> x = new Ok<>(10);
             x.expectErr("Testing expectErr"); // errors with `Testing expectErr: 10`
         });
     }
@@ -171,71 +171,71 @@ public class Tests {
     @Test
     void test_unwrapErr() {
         assertThrows(RuntimeException.class, () -> {
-            Result<Integer, String> x = new Ok<Integer, String>(2);
+            Result<Integer, String> x = new Ok<>(2);
             x.unwrapErr(); // errors with `2`
         });
 
-        Result<Integer, String> x = new Err<Integer, String>("emergency failure");
+        Result<Integer, String> x = new Err<>("emergency failure");
         assertEquals("emergency failure", x.unwrapErr());
     }
 
     @Test
     void test_and() {
-        Result<Integer, String> x = new Ok<Integer, String>(2);
-        Result<String, String> y = new Err<String, String>("late error");
-        assertEquals(new Err<String, String>("late error"), x.and(y));
+        Result<Integer, String> x = new Ok<>(2);
+        Result<String, String> y = new Err<>("late error");
+        assertEquals(new Err<>("late error"), x.and(y));
 
-        x = new Err<Integer, String>("early error");
-        y = new Ok<String, String>("foo");
-        assertEquals(new Err<Integer, String>("early error"), x.and(y));
+        x = new Err<>("early error");
+        y = new Ok<>("foo");
+        assertEquals(new Err<>("early error"), x.and(y));
 
-        x = new Err<Integer, String>("not a 2");
-        y = new Err<String, String>("late error");
-        assertEquals(new Err<Integer, String>("not a 2"), x.and(y));
+        x = new Err<>("not a 2");
+        y = new Err<>("late error");
+        assertEquals(new Err<>("not a 2"), x.and(y));
 
-        x = new Ok<Integer, String>(2);
-        y = new Ok<String, String>("different result type");
-        assertEquals(new Ok<String, String>("different result type"), x.and(y));
+        x = new Ok<>(2);
+        y = new Ok<>("different result type");
+        assertEquals(new Ok<>("different result type"), x.and(y));
     }
 
     @Test
     void test_andThen() {
-        assertEquals(new Ok<String, String>("4"), new Ok<Integer, String>(2).andThen((x) -> sqThenToString(x)));
-        assertEquals(new Err<String, String>("overflowed"), new Ok<Integer, String>(1_000_000).andThen((x) -> sqThenToString(x)));
-        assertEquals(new Err<String, String>("not a number"), new Err<Integer, String>("not a number").andThen((x) -> sqThenToString(x)));
+        assertEquals(new Ok<>("4"), new Ok<Integer, String>(2).andThen((x) -> sqThenToString(x)));
+        assertEquals(new Err<>("overflowed"), new Ok<Integer, String>(1_000_000).andThen((x) -> sqThenToString(x)));
+        assertEquals(new Err<>("not a number"), new Err<Integer, String>("not a number").andThen((x) -> sqThenToString(x)));
     }
 
     @Test
     void test_or() {
-        Result<Integer, String> x = new Ok<Integer, String>(2);
-        Result<Integer, String> y = new Err<Integer, String>("late error");
-        assertEquals(new Ok<Integer, String>(2), x.or(y));
+        Result<Integer, String> x = new Ok<>(2);
+        Result<Integer, String> y = new Err<>("late error");
+        assertEquals(new Ok<>(2), x.or(y));
 
-        x = new Err<Integer, String>("early error");
-        y = new Ok<Integer, String>(2);
-        assertEquals(new Ok<Integer, String>(2), x.or(y));
+        x = new Err<>("early error");
+        y = new Ok<>(2);
+        assertEquals(new Ok<>(2), x.or(y));
 
-        x = new Err<Integer, String>("not a 2");
-        y = new Err<Integer, String>("late error");
-        assertEquals(new Err<Integer, String>("late error"), x.or(y));
+        x = new Err<>("not a 2");
+        y = new Err<>("late error");
+        assertEquals(new Err<>("late error"), x.or(y));
 
-        x = new Ok<Integer, String>(2);
-        y = new Ok<Integer, String>(100);
-        assertEquals(new Ok<Integer, String>(2), x.or(y));
+        x = new Ok<>(2);
+        y = new Ok<>(100);
+        assertEquals(new Ok<>(2), x.or(y));
     }
 
     @Test
     void test_orElse() {
-        assertEquals(new Ok<Integer, Integer>(2), new Ok<Integer, Integer>(2).orElse((x) -> sq(x)).orElse((x) -> sq(x)));
-        assertEquals(new Ok<Integer, Integer>(2), new Ok<Integer, Integer>(2).orElse((x) -> err(x)).orElse((x) -> sq(x)));
-        assertEquals(new Ok<Integer, Integer>(9), new Err<Integer, Integer>(3).orElse((x) -> sq(x)).orElse((x) -> err(x)));
-        assertEquals(new Err<Integer, Integer>(3), new Err<Integer, Integer>(3).orElse((x) -> err(x)).orElse((x) -> err(x)));
+        assertEquals(new Ok<>(2), new Ok<Integer, Integer>(2).orElse((x) -> sq(x)).orElse((x) -> sq(x)));
+        assertEquals(new Ok<>(2), new Ok<Integer, Integer>(2).orElse((x) -> err(x)).orElse((x) -> sq(x)));
+        assertEquals(new Ok<>(9), new Err<Integer, Integer>(3).orElse((x) -> sq(x)).orElse((x) -> err(x)));
+        assertEquals(new Err<>(3), new Err<Integer, Integer>(3).orElse((x) -> err(x)).orElse((x) -> err(x)));
     }
 
     @Test
     void test_unwrapOr() {
         int defaultValue = 2;
-        Result<Integer, String> x = new Ok<Integer, String>(9);
+        Result<Integer, String> x = new Ok<>(9);
         assertEquals(9, x.unwrapOr(defaultValue));
     }
 
@@ -248,7 +248,7 @@ public class Tests {
     @Test
     void test_captureSupplier() {
         Result<Integer, Exception> x = Result.capture(() -> methodThatCanThrow(10));
-        assertEquals(new Ok<Integer, Exception>(10), x);
+        assertEquals(new Ok<>(10), x);
 
         assertThrows(Exception.class, () -> {
             Result<Integer, Exception> y = Result.capture(() -> methodThatCanThrow(0));
@@ -270,9 +270,9 @@ public class Tests {
     private Result<String, String> sqThenToString(int x) {
         Optional<String> sqOut = checkedMul(x, x).map((sq) -> sq.toString());
         if (sqOut.isPresent()) {
-            return new Ok<String, String>(sqOut.get());
+            return new Ok<>(sqOut.get());
         } else {
-            return new Err<String, String>("overflowed");
+            return new Err<>("overflowed");
         }
     }
 
@@ -290,11 +290,11 @@ public class Tests {
     }
 
     private Result<Integer, Integer> sq(int x) {
-        return new Ok<Integer, Integer>(x * x);
+        return new Ok<>(x * x);
     }
 
     private Result<Integer, Integer> err(int x) {
-        return new Err<Integer, Integer>(x);
+        return new Err<>(x);
     }
 
     private int count(String x) {
