@@ -4,7 +4,7 @@ A Java implementation of the Rust Result type
 
 ## How To Use
 
-1. Download `jresult-v0.1.1.jar` from the [Releases](https://github.com/BJTMastermind/JResult/releases) page.
+1. Download `jresult-v1.0.0.jar` from the [Releases](https://github.com/BJTMastermind/JResult/releases) page.
 2. Place the jar in your projects `lib` folder.
 
 * Import the Result type with `import me.bjtmastermind.jresult.Result;`
@@ -13,12 +13,12 @@ A Java implementation of the Rust Result type
 
 You can create a Result of an Ok type with:
 ```java
-Result<T, E> result = new Ok<T, E>(value);
+Result<T, E> result = new Ok<>(value);
 ```
 
 and an Err type with:
 ```java
-Result<T, E> result = new Err<T, E>(value);
+Result<T, E> result = new Err<>(value);
 ```
 
 `T` is your successful value type and `E` is your error type with `value` being the Ok or Err value.
