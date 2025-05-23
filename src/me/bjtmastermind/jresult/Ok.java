@@ -5,6 +5,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import me.bjtmastermind.jresult.utils.FormatUtils;
+
 public final class Ok<T, E> implements Result<T, E> {
     private final T value;
 
@@ -90,15 +92,16 @@ public final class Ok<T, E> implements Result<T, E> {
 
     @Override
     public E expectErr(String msg) {
+        String format = "%s: %s";
         if (value instanceof String) {
-            throw new RuntimeException(msg + ": \"" + value + "\"");
+            format = "%s: \"%s\"";
         }
-        throw new RuntimeException(msg + ": " + value);
+        throw new RuntimeException(String.format(format, msg, value));
     }
 
     @Override
     public E unwrapErr() {
-        throw new RuntimeException("called `Result.unwrapErr()` on an `Ok` value: " + value);
+        throw new RuntimeException("called `Result.unwrapErr()` on an `Ok` value: " + FormatUtils.formatError(value));
     }
 
     @Override

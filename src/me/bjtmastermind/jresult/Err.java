@@ -5,6 +5,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import me.bjtmastermind.jresult.utils.FormatUtils;
+
 public final class Err<T, E> implements Result<T, E> {
     private final E error;
 
@@ -80,16 +82,16 @@ public final class Err<T, E> implements Result<T, E> {
 
     @Override
     public T expect(String msg) {
-        unwrapFailed(msg, error);
-        return null;
+        String format = "%s: %s";
+        if (error instanceof String) {
+            format = "%s: \"%s\"";
+        }
+        throw new RuntimeException(String.format(format, msg, error));
     }
 
     @Override
     public T unwrap() {
-        if (error instanceof String) {
-            throw new RuntimeException("called `Result.unwrap()` on an `Err` value: \"" + error + "\"");
-        }
-        throw new RuntimeException("called `Result.unwrap()` on an `Err` value: " + error.getClass().getSimpleName() + " { " + error.toString().replace(error.getClass().getName()+": ", "message: \"") + "\" }");
+        throw new RuntimeException("called `Result.unwrap()` on an `Err` value: " + FormatUtils.formatError(error));
     }
 
     @Override
@@ -130,14 +132,6 @@ public final class Err<T, E> implements Result<T, E> {
     @Override
     public T unwrapOrElse(Function<E, T> f) {
         return f.apply(error);
-    }
-
-    private void unwrapFailed(String msg, E error) {
-        String format = "%s: %s";
-        if (error instanceof String) {
-            format = "%s: \"%s\"";
-        }
-        throw new RuntimeException(String.format(format, msg, error));
     }
 
     @SuppressWarnings("rawtypes")
