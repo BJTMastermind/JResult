@@ -4,7 +4,7 @@ A Java implementation of the Rust Result type
 
 ## How To Use
 
-1. Download `jresult-v1.0.0.jar` from the [Releases](https://github.com/BJTMastermind/JResult/releases) page.
+1. Download `jresult-v1.0.1.jar` from the [Releases](https://github.com/BJTMastermind/JResult/releases) page.
 2. Place the jar in your projects `lib` folder.
 
 * Import the Result type with `import me.bjtmastermind.jresult.Result;`
